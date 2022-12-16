@@ -1,0 +1,50 @@
+---
+title: "Data Camp Tree Specie Challenge"
+author: "Omotola_Olasope"
+date: "`r Sys.Date()`"
+output: 
+  md_document:
+    variant: markdown_github
+---
+
+```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Contents
+ - [Introduction and Background](#introduction-and-background)
+  * [Objectives](#objectives)
+ - [Data Preparation](#data-preparation)
+ - [Data Processing/Cleaning](#data-processingcleaning)
+ - [Create two dummy variables](#create-two-dummy-variables-for-whether-each-participant-is)
+ - [How is the mobile money divided between the three companies?](#how-is-the-mobile-money-market-divided-between-the-three-companies)
+ - [Difference in the share of customers who have experienced failed mobile money transactions](#is-there-a-difference-in-the-share-of-customers-who-have-experienced-failed-mobile-money-transactions-in-rural-and-urban-villages-if-so-is-it-statistically-significant)
+  * [Findings](#findings)
+  * [Hypothesis Testing](#hypothesis-testing)
+ - [What variables are good predictors that someone will cancel their mobile money account?](#what-variables-are-good-predictors-that-someone-will-cancel-their-mobile-money-account)
+ - [What causes a customer to stop using their mobile money account?](#what-causes-a-customer-to-stop-using-their-mobile-money-account)
+ - [Key findings and Summary](#key-findings-and-summary)
+  * [Recommendations](#recommendations)
+  * [Limitations of the Data](#limitations-of-the-data)
+ 
+## Introduction and background
+You work for a nonprofit organization advising the planning department on ways to improve the quantity and quality of trees in New York City. The urban design team believes tree size (using trunk diameter as a proxy for size) and health are the most desirable characteristics of city trees.
+
+The city would like to learn more about which tree species are the best choice to plant on the streets of Manhattan.
+
+### Objectives
+The aim of the analysis is to create a report that covers the following:
+
+- What are the most common tree species in Manhattan?
+- Which are the neighborhoods with the most trees?
+- A visualization of Manhattan's neighborhoods and tree locations.
+- What ten tree species would you recommend the city plant in the future?
+
+## Data Preparation
+The Tree census and neighborhood information is publicly available from the City of New York NYC Open Data <https://opendata.cityofnewyork.us/data/>
+
+## Data Processing/Cleaning
+
+
+
+
+
