@@ -1,14 +1,15 @@
-# Data_Analysis_Case_Study
+# DataCamp #12DaysofData Street Trees in NYC Challenge
 
 ## About 
-
-
-## The Task
-
+This is a report to find the best tree species to plant in NYC. It is part of the DataCamp series of competitions tagged #12DayofData aimed at challenging Data Enthusiasts to keep learning and demonstrating their data skills.
 
 ## Objectives of the Analysis
+The aim of the analysis is to create a report that covers the following:
 
-
+- What are the most common tree species in Manhattan?
+- Which are the neighborhoods with the most trees?
+- A visualization of Manhattan's neighborhoods and tree locations. <https://public.tableau.com/app/profile/omotola.olasope/viz/AvisualizationofManhattansneighborhoodsandtreelocations_/Map?publish=yes>
+- What ten tree species would you recommend the city plant in the future?
 
 ## Variable Description
 

@@ -4,9 +4,9 @@ setwd("/home/omotolaolasope/Desktop/Data_Analysis/DataCamp_Tree_Specie_Challenge
 ## Installing and loading common packages and libraries
 library(tidyverse)
 library(dplyr)
-library(gridExtra)
-library(grid)
-library(naniar) #visualize missings per variable
+#library(gridExtra)
+#library(grid)
+#library(naniar) #visualize missings per variable
 
 treesdf <- read.csv('trees.csv')
 
@@ -43,6 +43,9 @@ colnames(tree_count)[2]  <- "number_of_trees"
 tree_count <- tree_count[order(tree_count$number_of_trees, decreasing=TRUE, na.last=FALSE),]
 
 # View first 15 most populous trees
+tree_count <- tree_count %>% 
+  arrange(-number_of_trees)
+
 head(tree_count, 10)
 
 # Get number of alive trees per location
@@ -56,7 +59,11 @@ colnames(nta_location_count)[2]  <- "number_of_trees"
 nta_location_count <- nta_location_count[order(nta_location_count$number_of_trees, decreasing=TRUE, na.last=FALSE),]
 
 # View location with most populous trees
+nta_location_count <- nta_location_count %>% 
+  arrange(-number_of_trees)
+
 head(nta_location_count)
+tail(nta_location_count)
 
 # Get number of dead trees per location
 deadTrees.location_count <- dead_trees %>% 
@@ -69,6 +76,9 @@ colnames(deadTrees.location_count)[2]  <- "number_of_trees"
 deadTrees.location_count <- deadTrees.location_count[order(deadTrees.location_count$number_of_trees, decreasing=TRUE, na.last=FALSE),]
 
 # View location with most populous dead trees
+deadTrees.location_count <- deadTrees.location_count %>% 
+  arrange(-number_of_trees)
+
 head(deadTrees.location_count)
 
 # sort trees by health status
@@ -101,11 +111,15 @@ tree_diameter <- alive_trees %>%
 tree_status.diameter_health <- merge(tree_diameter, trees_by_healthWIDE, by="spc_common")
 
 # clean merged dataframe
-## remove duplicate column
+## remove column
 tree_status.diameter_health <- tree_status.diameter_health[,-4]
+tree_status.diameter_health <- tree_status.diameter_health[,-3]
 
-## change rowsums column name
-colnames(tree_status.diameter_health)[7]  <- "number_of_trees"
+## change column name
+colnames(tree_status.diameter_health)[3]  <- "fair_health"
+colnames(tree_status.diameter_health)[4]  <- "good_health"
+colnames(tree_status.diameter_health)[5]  <- "poor_health"
+colnames(tree_status.diameter_health)[6]  <- "total_number_of_trees"
 
 
 #filter by diameter and percentage good to determine the best trees to recommend

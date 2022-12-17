@@ -15,19 +15,12 @@ knitr::opts_chunk$set(echo = TRUE)
   * [Objectives](#objectives)
  - [Data Preparation](#data-preparation)
  - [Data Processing/Cleaning](#data-processingcleaning)
- - [Create two dummy variables](#create-two-dummy-variables-for-whether-each-participant-is)
- - [How is the mobile money divided between the three companies?](#how-is-the-mobile-money-market-divided-between-the-three-companies)
- - [Difference in the share of customers who have experienced failed mobile money transactions](#is-there-a-difference-in-the-share-of-customers-who-have-experienced-failed-mobile-money-transactions-in-rural-and-urban-villages-if-so-is-it-statistically-significant)
-  * [Findings](#findings)
-  * [Hypothesis Testing](#hypothesis-testing)
- - [What variables are good predictors that someone will cancel their mobile money account?](#what-variables-are-good-predictors-that-someone-will-cancel-their-mobile-money-account)
- - [What causes a customer to stop using their mobile money account?](#what-causes-a-customer-to-stop-using-their-mobile-money-account)
+ - [Analysis with R](#analysis-with-r)
  - [Key findings and Summary](#key-findings-and-summary)
   * [Recommendations](#recommendations)
-  * [Limitations of the Data](#limitations-of-the-data)
  
 ## Introduction and background
-You work for a nonprofit organization advising the planning department on ways to improve the quantity and quality of trees in New York City. The urban design team believes tree size (using trunk diameter as a proxy for size) and health are the most desirable characteristics of city trees.
+I work for a nonprofit organization advising the planning department on ways to improve the quantity and quality of trees in New York City. The urban design team believes tree size (using trunk diameter as a proxy for size) and health are the most desirable characteristics of city trees.
 
 The city would like to learn more about which tree species are the best choice to plant on the streets of Manhattan.
 
@@ -44,7 +37,191 @@ The Tree census and neighborhood information is publicly available from the City
 
 ## Data Processing/Cleaning
 
+```{r include=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+## Installing and loading common packages and libraries
+library(tidyverse)
+library(dplyr)
+
+treesdf <- read.csv('trees.csv')
+
+## Exploring the data
+head(treesdf)
+colnames(treesdf)
+print(treesdf)
+
+```
+
+The data was relatively clean. However, it was observed that all the dead trees had no common name for its species, so I separated the dead trees from the alive ones to get more detailed results based on the projects objectives.
+
+```{r include=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+#seperate dead trees from alive ones
+dead_trees <- treesdf %>% 
+  filter(status == "Dead")
+
+alive_trees <- treesdf %>% 
+  filter(status == "Alive")
+
+```
+
+## Analysis With R
+
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+# Get number of alive trees per specie
+tree_count <- alive_trees %>% 
+  count(spc_common)
+
+# change column name for n column
+colnames(tree_count)[2]  <- "number_of_trees"
+
+# Sort by number_of_trees 
+tree_count <- tree_count[order(tree_count$number_of_trees, decreasing=TRUE, na.last=FALSE),]
+
+# Most populous trees
+tree_count <- tree_count %>% 
+  arrange(-number_of_trees)
+
+head(tree_count)
+
+```
+
+```{r}
+
+# Get number of alive trees per location
+nta_location_count <- alive_trees %>% 
+  count(nta_name)
+
+# change column name for n column
+colnames(nta_location_count)[2]  <- "number_of_trees"
+
+# Sort by number_of_trees 
+nta_location_count <- nta_location_count[order(nta_location_count$number_of_trees, decreasing=TRUE, na.last=FALSE),]
+
+# View location with most populous trees
+nta_location_count <- nta_location_count %>% 
+  arrange(-number_of_trees)
+
+head(nta_location_count)
+tail(nta_location_count)
+
+```
+
+```{r}
+
+# Get number of dead trees per location
+deadTrees.location_count <- dead_trees %>% 
+  count(nta_name)
+
+# change column name for n column
+colnames(deadTrees.location_count)[2]  <- "number_of_trees"
+
+# Sort by number_of_trees 
+deadTrees.location_count <- deadTrees.location_count[order(deadTrees.location_count$number_of_trees, decreasing=TRUE, na.last=FALSE),]
+
+# View location with most populous dead trees
+deadTrees.location_count <- deadTrees.location_count %>% 
+  arrange(-number_of_trees)
+
+head(deadTrees.location_count)
+
+```
 
 
+Since the urban design team believes trunk diameter and health are the most desirable characteristics of city trees, lets find out the trees with good health status and diameter greater than 9 to determine the best set of trees to recommend.
+
+```{r}
+
+# sort trees by health status
+trees_by_health <- alive_trees %>% 
+  group_by(spc_common, health) %>% 
+  summarise(number = n())
+
+trees_by_healthWIDE <- trees_by_health %>% 
+  spread(health, number)
+
+## add row sums to get percentages
+trees_by_healthWIDE$row_sum <- rowSums(trees_by_healthWIDE[ , c(2,3,4)], na.rm=TRUE)
+
+trees_by_healthWIDE$percentage_good <- round(100*(trees_by_healthWIDE$Good/trees_by_healthWIDE$row_sum), 2)
+
+trees_by_healthWIDE$percentage_fair <- round(100*(trees_by_healthWIDE$Fair/trees_by_healthWIDE$row_sum), 2)
+
+trees_by_healthWIDE$percentage_poor <- round(100*(trees_by_healthWIDE$Poor/trees_by_healthWIDE$row_sum), 2)
+
+# sort trees by diameter
+tree_diameter <- alive_trees %>% 
+  group_by(spc_common) %>% 
+  summarise(
+    mean_diameter = mean(tree_dbh),
+    median_diameter = median(tree_dbh),
+    number = n()) %>%
+  arrange(-mean_diameter)
+
+# merge the two sorted data frames by specie
+tree_status.diameter_health <- merge(tree_diameter, trees_by_healthWIDE, by="spc_common")
+
+# clean merged dataframe
+## remove column
+tree_status.diameter_health <- tree_status.diameter_health[,-4]
+tree_status.diameter_health <- tree_status.diameter_health[,-3]
+
+## change column name
+colnames(tree_status.diameter_health)[3]  <- "fair_health"
+colnames(tree_status.diameter_health)[4]  <- "good_health"
+colnames(tree_status.diameter_health)[5]  <- "poor_health"
+colnames(tree_status.diameter_health)[6]  <- "total_number_of_trees"
 
 
+#filter by diameter and percentage good to determine the best trees to recommend
+recommended_trees <- tree_status.diameter_health %>% 
+  filter(mean_diameter >= 9 & percentage_good >= 70) %>% 
+  arrange(-percentage_good)
+
+# View first 10 recommended trees to plant
+head(recommended_trees, 10)
+
+```
+
+# Key Findings and Summary
+A visualization of Manhattan's neighborhoods and tree locations can be found here. <https://public.tableau.com/app/profile/omotola.olasope/viz/AvisualizationofManhattansneighborhoodsandtreelocations_/Map?publish=yes>
+
+### Table One
+```{r echo=FALSE, Plot_One}
+
+head(tree_count)
+
+```
+
+### Description
+The most common tree specie in Manhattan is honeylocust. Others include Callery pear, ginkgo, pin oak and Sophora.
+
+### Table Two
+```{r echo=FALSE, Plot_One}
+
+head(nta_location_count)
+
+```
+
+### Description
+The neighborhood with the most trees is Upper West Side. Other neighborhoods include Upper East Side-Carnegie Hill, West Village, Central Harlem North-Polo Grounds and Hudson Yards-Chelsea-Flatiron-Union Square.
+
+### Table Three
+```{r echo=FALSE, Plot_One}
+
+head(recommended_trees, 10)
+
+```
+
+### Description
+Ten tree species I would recommend the city should plant in the future based on their trunk diameter and health are Smoketree, Black Maple, Amur Tork Tree, Willow Oak, Siberian Elm, Honeylocust, Pin Oak, American Elm, White Ash and Sophora. 
+
+## Recommendations
+* The city should plant more of the following tree species: Smoketree, Black Maple, Amur Tork Tree, Willow Oak, Siberian Elm, Honeylocust, Pin Oak, American Elm, White Ash and Sophora.
+
+* More trees need to be planted in the following locations Stuyvesant Town-Cooper Village, Manhattanville, Midtown-Midtown South, Gramercy, Battery Park City-Lower Manhattan and Chinatown.
+
+* Further analysis should be carried out to ascertain the reason for the number of dead trees in the following regions Washington Heights South, Hudson Yards-Chelsea-Flatiron-Union Square, Central Harlem North-Polo Grounds, East Harlem North, Washington Heights North, and West Village.
+
+------
