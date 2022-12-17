@@ -9,6 +9,7 @@ output:
 
 ```{r setup, include=FALSE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 ## Contents
  - [Introduction and Background](#introduction-and-background)
@@ -188,7 +189,7 @@ head(recommended_trees, 10)
 A visualization of Manhattan's neighborhoods and tree locations can be found here. <https://public.tableau.com/app/profile/omotola.olasope/viz/AvisualizationofManhattansneighborhoodsandtreelocations_/Map?publish=yes>
 
 ### Table One
-```{r echo=FALSE, Plot_One}
+```{r echo=FALSE, options(knitr.duplicate.label = "allow")}
 
 head(tree_count)
 
@@ -198,7 +199,7 @@ head(tree_count)
 The most common tree specie in Manhattan is honeylocust. Others include Callery pear, ginkgo, pin oak and Sophora.
 
 ### Table Two
-```{r echo=FALSE, Plot_One}
+```{r echo=FALSE}
 
 head(nta_location_count)
 
@@ -208,7 +209,7 @@ head(nta_location_count)
 The neighborhood with the most trees is Upper West Side. Other neighborhoods include Upper East Side-Carnegie Hill, West Village, Central Harlem North-Polo Grounds and Hudson Yards-Chelsea-Flatiron-Union Square.
 
 ### Table Three
-```{r echo=FALSE, Plot_One}
+```{r echo=FALSE}
 
 head(recommended_trees, 10)
 
